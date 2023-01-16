@@ -23,7 +23,7 @@ function PaginatedItems({
 
   useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
-    // console.log(`Loading items from ${itemOffset} to ${endOffset}`);
+    console.log(`Loading items from ${itemOffset} to ${endOffset}`);
     const filterPagination =
       searchField && searchField.length > 0 ? searchField : todos;
     setPageData(filterPagination);
