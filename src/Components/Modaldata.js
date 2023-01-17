@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Modal from "bootstrap";
-
+import axios from "axios";
 const Modaldata = ({
   matchid,
   setTodos,
   todos,
+  first,
   header,
   editDataObj,
   setData,
@@ -13,7 +14,7 @@ const Modaldata = ({
   setDisplayTodos,
   setFilyerType,
 }) => {
-  let listItems = JSON.parse(localStorage.getItem("formValues"));
+  // let listItems = JSON.parse(localStorage.getItem("formValues"));
 
   var val = Math.floor(1000 + Math.random() * 9000);
   // console.log("matchid123", matchid);
@@ -27,7 +28,7 @@ const Modaldata = ({
         tag: "",
         date: "",
         status: "pending",
-        idNew: val,
+        id: val,
       });
     }
   }, [editDataObj, header]);
@@ -60,8 +61,8 @@ const Modaldata = ({
     console.log("dydhie2");
     if (header === true) {
       if (data.title !== "" && data.tag !== "" && data.date !== "") {
-        if (!listItems) {
-          listItems = [];
+        if (!todos) {
+          todos = [];
         }
         // console.log("console_data", todos);
 
@@ -71,46 +72,67 @@ const Modaldata = ({
         //  line code put only data
 
         const todosData1 = data && [...todos, data];
+        console.log(todosData1, "todosData1");
         setTodos(todosData1);
+        axios
+          .post("https://jsonplaceholder.typicode.com/todos", todosData1)
+.then(function (response) { })
+          .catch(function (error) {
+            console.log(error);
+          });
+        // JSON.parse(localStorage.getItem("formValues"));
         setData({
           title: "",
           tag: "",
           date: "",
-          status: "pending",
-          idNew: val,
+          completed: false,
+          id: val,
         });
-        localStorage.setItem("formValues", JSON.stringify(todosData1));
-        listItems = JSON.parse(localStorage.getItem("formValues"));
+        // localStorage.setItem("formValues", JSON.stringify(todosData1));
+
+        // axios.post('https://jsonplaceholder.typicode.com/todos', todosData1)
+        // .then(function (response) {
+
+        //    listItems= localStorage.setItem("formValues", JSON.stringify(response.data))
+        //    listItems = JSON.parse(localStorage.getItem("formValues"));
+        // })
+
+        // .catch(function (error) {
+        //   // handle error
+        //   console.log(error);
+        // })
+
+        // JSON.parse(localStorage.getItem("formValues"));
         setSearchField(todosData1);
         setDisplayTodos(todosData1);
         setFilyerType("");
       }
     } else {
       todos.filter((curr) => {
-        console.log(curr, matchid, "curr222");
-        if (matchid && curr.idNew === matchid) {
+        console.log(curr.id, matchid, "curr222");
+        if (matchid && curr.id === matchid) {
           setData({
             title: curr.title,
             tag: curr.tag,
             date: curr.date,
-            status: "pending",
-            idNew: matchid,
+            completed: false,
+            id: matchid,
           });
 
           const newTodo = [...todos];
-          var foundIndex = todos.findIndex((x) => x.idNew === matchid);
+          var foundIndex = todos.findIndex((x) => x.id === matchid);
           console.log(foundIndex, matchid, todos, "dydhie1");
           newTodo[foundIndex] = {
             title: data.title,
             tag: data.tag,
             date: data.date,
             status: "pending",
-            idNew: matchid,
+            id: matchid,
           };
           console.log(newTodo, todos, "dydhie11");
           setTodos(newTodo);
-          localStorage.setItem("formValues", JSON.stringify(newTodo));
-          JSON.parse(localStorage.getItem("formValues"));
+          // localStorage.setItem("formValues", JSON.stringify(newTodo));
+          // JSON.parse(localStorage.getItem("formValuesmatchid"));
           setSearchField(newTodo);
           setDisplayTodos(newTodo);
           setFilyerType("");
@@ -119,7 +141,7 @@ const Modaldata = ({
             tag: "",
             date: "",
             status: "pending",
-            idNew: val,
+            id: val,
           });
         }
       });

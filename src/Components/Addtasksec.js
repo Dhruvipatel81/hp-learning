@@ -9,6 +9,7 @@ const Addtasksec = ({
   setHeader,
   setData,
   data,
+  first
 }) => {
   const [buttonClick, setButtonClick] = useState(false);
   const hadleClick = () => {
@@ -34,6 +35,7 @@ const Addtasksec = ({
           {buttonClick ? (
             <Modaldata
               type="add"
+              first={first}
               setData={setData}
               header={header}
               tododata={tododata}

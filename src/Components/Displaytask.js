@@ -15,13 +15,15 @@ function PaginatedItems({
   const [pageData, setPageData] = useState(todos);
 
   const handlePageCount = (pageDataLength) =>
-    Math.ceil(pageDataLength.length / itemsPerPage);
+    pageDataLength && Math.ceil(pageDataLength.length / itemsPerPage);
+
   const [pageCountData, setPageCountData] = useState(handlePageCount(pageData));
   useEffect(() => {
     setItemOffset(0);
   }, [filyerType]);
 
   useEffect(() => {
+    console.log("todos2");
     const endOffset = itemOffset + itemsPerPage;
     console.log(`Loading items from ${itemOffset} to ${endOffset}`);
     const filterPagination =
@@ -29,10 +31,11 @@ function PaginatedItems({
     setPageData(filterPagination);
     setPageCountData(handlePageCount(filterPagination));
     // console.log("console_selectedFilterData_2", searchField, filterPagination);
-    const currentItems = filterPagination.slice(itemOffset, endOffset);
-    // console.log("currentItems", currentItems);
+    const currentItems =
+      filterPagination && filterPagination.slice(itemOffset, endOffset);
+    console.log("currentItems", currentItems);
     // setSearchField(currentItems);
-    setDisplayTodos(currentItems);
+    // setDisplayTodos(currentItems);
   }, [itemOffset, filyerType]);
 
   // Invoke when user click to request another page.
@@ -58,39 +61,31 @@ function PaginatedItems({
     </>
   );
 }
-
-const Displaytask = ({
-  listItems,
-  todos,
-  setTodos,
-  setData,
-  data,
-  header,
-  setHeader,
-}) => {
-  JSON.parse(localStorage.getItem("formValues"));
+const Displaytask = ({ todos, setTodos, setData, data, header, setHeader }) => {
+  // JSON.parse(localStorage.getItem("formValues"));
+  // console.log("todoitem",listItems)
+  const [displayTodos, setDisplayTodos] = useState(todos);
   const [matchid, setMatchid] = useState("");
   const [dataeditable, setDataeditable] = useState(false);
   const [searchField, setSearchField] = useState();
-  const [displayTodos, setDisplayTodos] = useState(todos);
+
+
   const [search, setSeach] = useState(false);
   const [filyerType, setFilyerType] = useState("filter");
 
   // const [ascendingOrder, setascendingOrder] = useState(todos)
-
-  const [idnew, setIdnew] = useState("");
-
+  console.log(todos,"todos333")
+  console.log("todos1",displayTodos, todos);
+const [id, setId] = useState("");
   const [editDataObj, setEditDataObj] = useState([]);
-
   const [editable, setEditable] = useState(false);
-
   const deleteTodo = (curr) => {
     const deleteditem = todos.filter((currelem, index) => {
-      return currelem.idNew !== curr.idNew;
+      return currelem.id !== curr.id;
     });
     setTodos(deleteditem);
-    localStorage.setItem("formValues", JSON.stringify(deleteditem));
-    JSON.parse(localStorage.getItem("formValues"));
+    // localStorage.setItem("formValues", JSON.stringify(deleteditem));
+    // JSON.parse(localStorage.getItem("formValues"));
     setSearchField(deleteditem);
     setDisplayTodos(deleteditem);
   };
@@ -98,17 +93,17 @@ const Displaytask = ({
     console.log(curr, "idd");
     const editData = todos.filter((currele, index) => {
       // console.log(curr.title,index,id,"curr")
-      if (currele.idNew === curr.idNew) {
-        return currele.idNew === curr.idNew;
+      if (currele.id === curr.id) {
+        return currele.id === curr.id;
       }
     });
     // setData(editData)
     setEditDataObj(editData);
 
     const newdata = { ...editData[0] };
-    const Fid = newdata.idNew;
+    const Fid = newdata.id;
     console.log(Fid, "Fid");
-    setIdnew(curr.idNew);
+    setId(curr.id);
     setMatchid(Fid);
 
     setDataeditable(true);
@@ -117,24 +112,25 @@ const Displaytask = ({
   };
   // console.log(newdata.idNew,"editData")
   // console.log(matchid, "Matchid");
-  const statuschange = (curr, index) => {
+  const statuschange = (curr, currid) => {
     setFilyerType(curr);
     const neObj = { ...curr };
-    console.log(curr.status, "id222222");
+    console.log(neObj.id, currid, "id222222");
 
-    if (curr.status === "pending") {
-      neObj.status = "completed";
+    if (curr.completed === false) {
+      neObj.completed = true;
     } else {
-      neObj.status = "pending";
+      neObj.completed = false;
     }
     // console.log("console_neObj", neObj, index);
     const newTodo = [...todos];
-    var foundIndex = todos.findIndex((x) => x.idNew === neObj.idNew);
-    // console.log(foundIndex, matchid, todos, "dydhie1")
+    var foundIndex = todos.findIndex((x) => x.id === neObj.id);
+
+    console.log(foundIndex, neObj.id, "dydhie1");
     newTodo[foundIndex] = neObj;
     // console.log(newTodo, todos, newTodo[foundIndex], "newTodofoundIndex");
     setTodos(newTodo);
-    localStorage.setItem("formValues", JSON.stringify(newTodo));
+    // localStorage.setItem("formValues", JSON.stringify(newTodo));
     setSearchField(newTodo);
     setDisplayTodos(newTodo);
   };
@@ -184,22 +180,25 @@ const Displaytask = ({
     setFilyerType(targetValue);
     // console.log(targetValue, "targetValue");
     const FilterArray = [...todos];
-
-    if (targetValue === "filter") {
-      setSearchField(todos);
-      setDisplayTodos(todos);
-    } else {
-      const selectedFilterData = FilterArray.filter((item) => {
-        // console.log(item.status === targetValue, "1234");
-        return item.status === targetValue;
+    let selectedFilterData;
+    if (targetValue === "completed") {
+      selectedFilterData = FilterArray.filter((item) => {
+        return item.completed === true;
       });
-      // console.log("console_selectedFilterData", selectedFilterData);
       setSearchField(selectedFilterData);
       setDisplayTodos(selectedFilterData);
+    } else if (targetValue === "pending") {
+      selectedFilterData = FilterArray.filter((item) => {
+        return item.completed === false;
+      });
+      setSearchField(selectedFilterData);
+      setDisplayTodos(selectedFilterData);
+    } else {
+      setSearchField(todos);
+      setDisplayTodos(todos);
     }
   };
 
-  
   return (
     <>
       <div className="second-display-task">
@@ -264,35 +263,30 @@ const Displaytask = ({
             </div>
           </div>
           <div className="todo-li-items shadow p-3 bg-white rounded ">
-            <ul
-              className="todo-ul"
-              style={{
-                marginLeft: "-56px",
-                marginTop: "-16px",
-                marginRight: "-16px",
-              }}
-            >
-              {/* {console.log("console_displayTodos", displayTodos)} */}
+            <ul className="todo-ul">
               {displayTodos &&
                 displayTodos?.map((curr, index) => {
-                  if(curr.status==="social"){
-                    
-                  }
                   return (
                     <li className="todo-li" key={index}>
                       <label htmlFor="">
                         <input
                           type="checkbox"
-                          onChange={() => statuschange(curr, index)}
-                          id={index}
+                          onChange={() => statuschange(curr, curr.id)}
+                          id={curr.id}
                         />
-                        <p
-                          className={curr.status === "completed" ? "test" : ""}
-                        >
+                        <p className={curr.completed === true ? "test" : ""}>
                           {curr.title}
                         </p>
-                        <p className={curr.tag==="social" ? "socialtag": curr.tag==="friends" ? "friendstag" : "freelancetag"}>
-                          {curr.tag}
+                        <p
+                          className={
+                            curr.tag === "social"
+                              ? "socialtag"
+                              : curr.tag === "friends"
+                              ? "friendstag"
+                              : "freelancetag"
+                          }
+                        >
+                          {curr.completed}
                         </p>
                         <p>{curr.date}</p>
                       </label>
