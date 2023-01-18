@@ -74,17 +74,14 @@ const Modaldata = ({
 
         const todosData1 = data && [...todos, data];
         console.log(todosData1, "todosData1");
-        axios
-          .post("http://localhost:5001/todos", 
+        axios.post("http://localhost:5001/todos", 
           {
-      
+            "userId": data.id,
               title: data.title,
-              tag: data.tag,
+              completed: false,
               id:data.id,
             },
-           
           )
-          
           .then(function (response) {
             
             getData();
@@ -137,20 +134,31 @@ const Modaldata = ({
           var foundIndex = todos.findIndex((x) => x.id === matchid);
           console.log(foundIndex, matchid, todos, "dydhie1");
           newTodo[foundIndex] = {
+            "userId": curr.userId,
+            id: curr.id,
             title: data.title,
-            tag: data.tag,
-            date: data.date,
-            status: "pending",
-            id: matchid,
+            "completed": false
           };
           console.log(newTodo, todos, "dydhie11");
           setTodos(newTodo);
-
-          axios.put
-          // localStorage.setItem("formValues", JSON.stringify(newTodo));
-          // JSON.parse(localStorage.getItem("formValuesmatchid"));
           setSearchField(newTodo);
           setDisplayTodos(newTodo);
+          axios.put(`http://localhost:5001/todos/${curr.id}`,{
+            "userId": curr.userId,
+            id: curr.id,
+            title: data.title,
+            "completed": false
+          } 
+          ).then(function (response) {
+            console.log(response,"response");
+            getData();
+          })
+          .catch(function (error) {
+            console.log("error");
+          })
+            // console.log(todosData1);
+          
+         
           setFilyerType("");
           setData({
             title: "",

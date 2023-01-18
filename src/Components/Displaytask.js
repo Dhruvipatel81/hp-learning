@@ -31,7 +31,7 @@ function PaginatedItems({
     // setSearchField(todos)
     console.log("todos2");
     const endOffset = itemOffset + itemsPerPage;
-    console.log(`Loading items from ${itemOffset} to ${endOffset}`);
+    // console.log(`Loading items from ${itemOffset} to ${endOffset}`);
     const filterPagination =
     todos.length!==0 &&todos;
     // if (todos.length !== 0 && todos) {
@@ -41,16 +41,16 @@ function PaginatedItems({
     console.log("filterPagination333", searchField);
     setPageData(filterPagination);
     setPageCountData(handlePageCount(searchField));
-    console.log(
-      "console_selectedFilterData_2",
-      filterPagination,
-      searchField,
-      pageData,
-      todos
-    );
+    // console.log(
+    //   "console_selectedFilterData_2",
+    //   filterPagination,
+    //   searchField,
+    //   pageData,
+    //   todos
+    // );
     const currentItems =
     searchField && searchField.slice(itemOffset, endOffset);
-    console.log("currentItems", currentItems);
+    // console.log("currentItems", currentItems);
     // setSearchField(currentItems);
     setDisplayTodos(currentItems);
   }, [itemOffset, filyerType, todos]);
@@ -89,10 +89,11 @@ const Displaytask = ({
   const [dataeditable, setDataeditable] = useState(false);
   const [searchField, setSearchField] = useState(todos);
   const [displayTodos, setDisplayTodos] = useState(todos);
+  const [status1, setStatus1] = useState("")
 
   const [filyerType, setFilyerType] = useState("filter");
  
-  console.log("todos1", displayTodos, todos);
+  // console.log("todos1", displayTodos, todos);
   const [id, setId] = useState("");
   const [editDataObj, setEditDataObj] = useState([]);
   const [editable, setEditable] = useState(false);
@@ -138,8 +139,8 @@ const Displaytask = ({
     const neObj = { ...curr };
     console.log(neObj.id, curr.completed, currid, "id222222");
 
-    if (curr.completed === false) {
-      neObj.completed = true;
+     if (curr.completed === false) {
+        neObj.completed = true;
     } else {
       neObj.completed = false;
     }
@@ -150,27 +151,27 @@ const Displaytask = ({
     console.log(foundIndex, neObj.id, "dydhie1");
     newTodo[foundIndex] = neObj;
 
+    axios
+    .put(`http://localhost:5001/todos/${curr.id}`, 
+   {
+    userid:curr.id,
+    title: curr.title,
+     completed:curr.completed===false?true:false,
+     id:curr.id
+  },
+     )
+    .then(function (response) {
+       getData();   
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
     setTodos(newTodo);
 
     setSearchField(newTodo);
     setDisplayTodos(newTodo);
   };
-  // const updateProduct = () => {
-  //   fetch(`/addproducts/${routeId}`, {
-  //     method: 'PATCH',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       name: item.name,
-  //       price: item.price
-  //     }),
-  //   })
-  // }
-  //   axios.patch(`https://jsonplaceholder.typicode.com/todos/${curr.id}`,{
-  //        completed:""
-  //   })
-  // };
+
 
   const searchtask = (e) => {
     console.log(e.target.value, "valuess");
@@ -314,7 +315,7 @@ setSearchField(todos)
                         <p className={curr.completed === true ? "test" : ""}>
                           {curr.title}
                         </p>
-                        <p
+                        {/* <p
                           className={
                             curr.tag === "social"
                               ? "socialtag"
@@ -324,7 +325,7 @@ setSearchField(todos)
                           }
                         >
                           {curr.completed}
-                        </p>
+                        </p> */}
                         <p>{curr.date}</p>
                       </label>
 
