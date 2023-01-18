@@ -89,7 +89,7 @@ const Displaytask = ({
   const [dataeditable, setDataeditable] = useState(false);
   const [searchField, setSearchField] = useState(todos);
   const [displayTodos, setDisplayTodos] = useState(todos);
-  const [status1, setStatus1] = useState("")
+  const [checked, setChecked] = useState("")
 
   const [filyerType, setFilyerType] = useState("filter");
  
@@ -105,7 +105,7 @@ const Displaytask = ({
     setTodos(deleteditem);
 
     setSearchField(deleteditem);
-    setDisplayTodos(deleteditem);
+    // setDisplayTodos(deleteditem);
     axios.delete(`http://localhost:5001/todos/${curr.id}`, {
 
 }).then(
@@ -134,18 +134,29 @@ const Displaytask = ({
     setHeader(false);
   };
 
-  const statuschange = (curr, currid) => {
+  // const statuscheck=()={
+
+  // }
+  const statuschange = (curr,e) => {
+e.target.checked=true;
     setFilyerType(curr);
+    console.log(e.target.checked,e.target.id, "id2333");
     const neObj = { ...curr };
-    console.log(neObj.id, curr.completed, currid, "id222222");
+    console.log(neObj.id, curr.completed, "id222222");
 
      if (curr.completed === false) {
-        neObj.completed = true;
+      neObj.completed = true;
+     
+     
     } else {
       neObj.completed = false;
+      
     }
 
+    
     const newTodo = [...todos];
+console.log(curr.id,"newid")
+  
     var foundIndex = todos.findIndex((x) => x.id === neObj.id);
 
     console.log(foundIndex, neObj.id, "dydhie1");
@@ -157,19 +168,25 @@ const Displaytask = ({
     userid:curr.id,
     title: curr.title,
      completed:curr.completed===false?true:false,
-     id:curr.id
+     id:curr.id,
+     
   },
      )
     .then(function (response) {
-       getData();   
+  // e.target.checked=false;
+       getData();  
+      //  setTodos(newTodo);
+setSearchField(newTodo);
+      //  setDisplayTodos(newTodo); 
+       if(e.target.checked===true){
+        e.target.checked=false;
+       }
+       
     })
     .catch(function (error) {
       console.log(error);
     });
-    setTodos(newTodo);
-
-    setSearchField(newTodo);
-    setDisplayTodos(newTodo);
+   
   };
 
 
@@ -183,7 +200,7 @@ const Displaytask = ({
     console.log(filtered, "filtered22");
     setSearchField(filtered);
     console.log(searchField, "filtered2");
-    setDisplayTodos(filtered);
+    // setDisplayTodos(filtered);
     console.log(displayTodos, "todo23");
   };
   const sortOptions = ["ascending", "descending"];
@@ -197,14 +214,14 @@ const Displaytask = ({
       const ascSorting = netarray.sort((a, b) => (a.title > b.title ? 1 : -1));
       // console.log(ascSorting, "ascSorting");
       setSearchField(ascSorting);
-      setDisplayTodos(ascSorting);
+      // setDisplayTodos(ascSorting);
     } else if (e.target.value === "descending") {
       const desSorting = netarray.sort((a, b) => (a.title < b.title ? 1 : -1));
       setSearchField(desSorting);
-      setDisplayTodos(desSorting);
+      // setDisplayTodos(desSorting);
     } else {
       setSearchField(netarray);
-      setDisplayTodos(netarray);
+      // setDisplayTodos(netarray);
     }
   };
   // console.log(displayTodos, "displayTodos12222");
@@ -224,16 +241,16 @@ setSearchField(todos)
         return item.completed === true;
       });
       setSearchField(selectedFilterData);
-      setDisplayTodos(selectedFilterData);
+      // setDisplayTodos(selectedFilterData);
     } else if (targetValue === "pending") {
       selectedFilterData = FilterArray.filter((item) => {
         return item.completed === false;
       });
       setSearchField(selectedFilterData);
-      setDisplayTodos(selectedFilterData);
+      // setDisplayTodos(selectedFilterData);
     } else {
       setSearchField(todos);
-      setDisplayTodos(todos);
+      // setDisplayTodos(todos);
     }
   };
 
@@ -309,7 +326,9 @@ setSearchField(todos)
                       <label htmlFor="">
                         <input
                           type="checkbox"
-                          onChange={() => statuschange(curr, curr.id)}
+                          // checked={checked}
+                          onChange={(e) => statuschange(curr,e)}
+                          
                           id={curr.id}
                         />
                         <p className={curr.completed === true ? "test" : ""}>

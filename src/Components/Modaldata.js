@@ -115,7 +115,7 @@ const Modaldata = ({
 
         // JSON.parse(localStorage.getItem("formValues"));
         setSearchField(todosData1);
-        setDisplayTodos(todosData1);
+        // setDisplayTodos(todosData1);
         setFilyerType("");
       }
     } else {
@@ -142,7 +142,7 @@ const Modaldata = ({
           console.log(newTodo, todos, "dydhie11");
           setTodos(newTodo);
           setSearchField(newTodo);
-          setDisplayTodos(newTodo);
+          // setDisplayTodos(newTodo);
           axios.put(`http://localhost:5001/todos/${curr.id}`,{
             "userId": curr.userId,
             id: curr.id,
