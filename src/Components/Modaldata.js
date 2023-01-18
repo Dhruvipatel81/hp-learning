@@ -13,6 +13,7 @@ const Modaldata = ({
   setSearchField,
   setDisplayTodos,
   setFilyerType,
+  getData,
 }) => {
   // let listItems = JSON.parse(localStorage.getItem("formValues"));
 
@@ -73,13 +74,26 @@ const Modaldata = ({
 
         const todosData1 = data && [...todos, data];
         console.log(todosData1, "todosData1");
-        setTodos(todosData1);
         axios
-          .post("https://jsonplaceholder.typicode.com/todos", todosData1)
-.then(function (response) { })
+          .post("http://localhost:5001/todos", 
+          {
+      
+              title: data.title,
+              tag: data.tag,
+              id:data.id,
+            },
+           
+          )
+          
+          .then(function (response) {
+            
+            getData();
+            console.log(todosData1);
+          })
           .catch(function (error) {
             console.log(error);
           });
+
         // JSON.parse(localStorage.getItem("formValues"));
         setData({
           title: "",
@@ -131,6 +145,8 @@ const Modaldata = ({
           };
           console.log(newTodo, todos, "dydhie11");
           setTodos(newTodo);
+
+          axios.put
           // localStorage.setItem("formValues", JSON.stringify(newTodo));
           // JSON.parse(localStorage.getItem("formValuesmatchid"));
           setSearchField(newTodo);
@@ -169,6 +185,8 @@ const Modaldata = ({
       // })
     }
   };
+ 
+
   return (
     <>
       {/* {console.log("printdata",data)} */}

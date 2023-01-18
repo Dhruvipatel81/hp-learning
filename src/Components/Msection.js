@@ -5,7 +5,22 @@ import "..//style/all.css";
 import Displaytask from "./Displaytask";
 const Msection = () => {
   const [todos, setTodos] = useState([]);
+
   // let listItems;
+  const getData = () => {
+    axios
+      .get("http://localhost:5001/todos")
+      // .get("https://jsonplaceholder.typicode.com/todos")
+      .then((response) => {
+        setTodos(response.data);
+
+        // console.log(datainfo,"datainfo");
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error);
+      });
+  };
   // let listItems = JSON.parse(localStorage.getItem("formValues"));
 
   // fetch("https://jsonplaceholder.typicode.com/todos")
@@ -13,16 +28,7 @@ const Msection = () => {
   //   .then((json) => localStorage.setItem("formValues", JSON.stringify(json)));
 
   useEffect(() => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/todos")
-      .then((response) => {
-        setTodos(response.data);
-        console.log("abc");
-      })
-      .catch((error) => {
-        // handle error
-        console.log(error);
-      });
+    getData();
   }, []);
   // listItems = JSON.parse(localStorage.getItem("formValues"));
 
@@ -57,6 +63,7 @@ const Msection = () => {
               setData={setData}
               header={header}
               setHeader={setHeader}
+              getData={getData}
             />
           </div>
           <div className="col-md-9">
@@ -67,6 +74,7 @@ const Msection = () => {
               setData={setData}
               header={header}
               setHeader={setHeader}
+              getData={getData}
             />
           </div>
         </div>

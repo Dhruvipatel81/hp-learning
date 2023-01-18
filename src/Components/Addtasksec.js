@@ -9,7 +9,8 @@ const Addtasksec = ({
   setHeader,
   setData,
   data,
-  first
+  first,
+  getData
 }) => {
   const [buttonClick, setButtonClick] = useState(false);
   const hadleClick = () => {
@@ -42,6 +43,7 @@ const Addtasksec = ({
               setTodos={setTodos}
               todos={todos}
               data={data}
+              getData={getData}
             />
           ) : (
             ""

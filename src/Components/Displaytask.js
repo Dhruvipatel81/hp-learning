@@ -1,47 +1,61 @@
 import React, { useEffect, useState } from "react";
-// import Editmodal from './Editmodal'
+import axios from "axios";
 import Modaldata from "./Modaldata";
 import ReactPaginate from "react-paginate";
 
-// import Form from 'react-bootstrap/Form';
 function PaginatedItems({
   itemsPerPage,
   todos,
-  setDisplayTodos,
+  displayTodos,
   searchField,
   filyerType,
+  setSearchField,
+  setDisplayTodos,
 }) {
   const [itemOffset, setItemOffset] = useState(0);
   const [pageData, setPageData] = useState(todos);
+  // const [filterPagination, setFilterPagination] = useState(todos);
 
   const handlePageCount = (pageDataLength) =>
     pageDataLength && Math.ceil(pageDataLength.length / itemsPerPage);
-
   const [pageCountData, setPageCountData] = useState(handlePageCount(pageData));
   useEffect(() => {
     setItemOffset(0);
   }, [filyerType]);
+  // useEffect(() => {
+  //   // setPageData(todos),
+  //   setPageData(filterPagination);
+  // }, [filterPagination]);
 
   useEffect(() => {
+    // setSearchField(todos)
     console.log("todos2");
     const endOffset = itemOffset + itemsPerPage;
     console.log(`Loading items from ${itemOffset} to ${endOffset}`);
     const filterPagination =
-      searchField && searchField.length > 0 ? searchField : todos;
+    todos.length!==0 &&todos;
+    // if (todos.length !== 0 && todos) {
+    //   setFilterPagination(todos);
+    // }
+    // searchField && searchField.length > 0 ? searchField : todos;
+    console.log("filterPagination333", searchField);
     setPageData(filterPagination);
-    setPageCountData(handlePageCount(filterPagination));
-    // console.log("console_selectedFilterData_2", searchField, filterPagination);
+    setPageCountData(handlePageCount(searchField));
+    console.log(
+      "console_selectedFilterData_2",
+      filterPagination,
+      searchField,
+      pageData,
+      todos
+    );
     const currentItems =
-      filterPagination && filterPagination.slice(itemOffset, endOffset);
+    searchField && searchField.slice(itemOffset, endOffset);
     console.log("currentItems", currentItems);
     // setSearchField(currentItems);
-    // setDisplayTodos(currentItems);
-  }, [itemOffset, filyerType]);
+    setDisplayTodos(currentItems);
+  }, [itemOffset, filyerType, todos]);
 
-  // Invoke when user click to request another page.
   const handlePageClick = (event) => {
-    // console.log("console_selectedFilterData_3", event);
-
     const newOffset = (event.selected * itemsPerPage) % pageData.length;
     // console.log("handlechange_newOffset", newOffset, itemsPerPage);
     setItemOffset(newOffset);
@@ -53,7 +67,6 @@ function PaginatedItems({
         breakLabel="..."
         nextLabel=">"
         onPageChange={handlePageClick}
-        // pageRangeDisplayed={5}
         pageCount={pageCountData}
         previousLabel="<"
         renderOnZeroPageCount={null}
@@ -61,34 +74,43 @@ function PaginatedItems({
     </>
   );
 }
-const Displaytask = ({ todos, setTodos, setData, data, header, setHeader }) => {
-  // JSON.parse(localStorage.getItem("formValues"));
-  // console.log("todoitem",listItems)
-  const [displayTodos, setDisplayTodos] = useState(todos);
+const Displaytask = ({
+  todos,
+  setTodos,
+  setData,
+  data,
+  header,
+  setHeader,
+  datainfo,
+  getData
+}) => {
+  console.log(todos, "todosdisplay");
   const [matchid, setMatchid] = useState("");
   const [dataeditable, setDataeditable] = useState(false);
-  const [searchField, setSearchField] = useState();
+  const [searchField, setSearchField] = useState(todos);
+  const [displayTodos, setDisplayTodos] = useState(todos);
 
-
-  const [search, setSeach] = useState(false);
   const [filyerType, setFilyerType] = useState("filter");
-
-  // const [ascendingOrder, setascendingOrder] = useState(todos)
-  console.log(todos,"todos333")
-  console.log("todos1",displayTodos, todos);
-const [id, setId] = useState("");
+ 
+  console.log("todos1", displayTodos, todos);
+  const [id, setId] = useState("");
   const [editDataObj, setEditDataObj] = useState([]);
   const [editable, setEditable] = useState(false);
   const deleteTodo = (curr) => {
-    const deleteditem = todos.filter((currelem, index) => {
+    const deleteditem = todos.filter((currelem) => {
+      console.log(curr.id,"currelem")
       return currelem.id !== curr.id;
     });
     setTodos(deleteditem);
-    // localStorage.setItem("formValues", JSON.stringify(deleteditem));
-    // JSON.parse(localStorage.getItem("formValues"));
+
     setSearchField(deleteditem);
     setDisplayTodos(deleteditem);
-  };
+    axios.delete(`http://localhost:5001/todos/${curr.id}`, {
+
+}).then(
+  getData()
+  );
+}
   const editItem = (curr) => {
     console.log(curr, "idd");
     const editData = todos.filter((currele, index) => {
@@ -97,7 +119,7 @@ const [id, setId] = useState("");
         return currele.id === curr.id;
       }
     });
-    // setData(editData)
+    setData(editData)
     setEditDataObj(editData);
 
     const newdata = { ...editData[0] };
@@ -110,44 +132,58 @@ const [id, setId] = useState("");
     setEditable(true);
     setHeader(false);
   };
-  // console.log(newdata.idNew,"editData")
-  // console.log(matchid, "Matchid");
+
   const statuschange = (curr, currid) => {
     setFilyerType(curr);
     const neObj = { ...curr };
-    console.log(neObj.id, currid, "id222222");
+    console.log(neObj.id, curr.completed, currid, "id222222");
 
     if (curr.completed === false) {
       neObj.completed = true;
     } else {
       neObj.completed = false;
     }
-    // console.log("console_neObj", neObj, index);
+
     const newTodo = [...todos];
     var foundIndex = todos.findIndex((x) => x.id === neObj.id);
 
     console.log(foundIndex, neObj.id, "dydhie1");
     newTodo[foundIndex] = neObj;
-    // console.log(newTodo, todos, newTodo[foundIndex], "newTodofoundIndex");
+
     setTodos(newTodo);
-    // localStorage.setItem("formValues", JSON.stringify(newTodo));
+
     setSearchField(newTodo);
     setDisplayTodos(newTodo);
   };
+  // const updateProduct = () => {
+  //   fetch(`/addproducts/${routeId}`, {
+  //     method: 'PATCH',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       name: item.name,
+  //       price: item.price
+  //     }),
+  //   })
+  // }
+  //   axios.patch(`https://jsonplaceholder.typicode.com/todos/${curr.id}`,{
+  //        completed:""
+  //   })
+  // };
 
   const searchtask = (e) => {
-    // setTargetval(e.target.value)
+    console.log(e.target.value, "valuess");
     setFilyerType(e.target.value);
-    setSeach(true);
-    let newAraay = todos;
-    // console.log("newAraay", newAraay);
-    // let  filtered = todos &&  todos.filter(
-    let filtered = todos.filter((item) =>
-      item.title.toLowerCase().includes(e.target.value.toLowerCase())
-    );
 
+    const filtered = todos.filter((item) => {
+      return item.title.toLowerCase().includes(e.target.value.toLowerCase());
+    });
+    console.log(filtered, "filtered22");
     setSearchField(filtered);
+    console.log(searchField, "filtered2");
     setDisplayTodos(filtered);
+    console.log(displayTodos, "todo23");
   };
   const sortOptions = ["ascending", "descending"];
 
@@ -172,10 +208,11 @@ const [id, setId] = useState("");
   };
   // console.log(displayTodos, "displayTodos12222");
   const filterOption = ["pending", "completed"];
-
+useEffect(()=>{
+setSearchField(todos)
+},[todos])
   const filterList = (e) => {
     // console.log(e.target.value, searchField);
-
     const targetValue = e.target.value;
     setFilyerType(targetValue);
     // console.log(targetValue, "targetValue");
@@ -327,15 +364,18 @@ const [id, setId] = useState("");
                 })}
             </ul>
           </div>
-          <PaginatedItems
-            itemsPerPage={4}
-            todos={todos}
-            setDisplayTodos={setDisplayTodos}
-            setSearchField={setSearchField}
-            setTodos={setTodos}
-            searchField={searchField}
-            filyerType={filyerType}
-          />
+          {todos && todos.length > 0 && (
+            <PaginatedItems
+              itemsPerPage={4}
+              todos={todos}
+              setDisplayTodos={setDisplayTodos}
+              setSearchField={setSearchField}
+              setTodos={setTodos}
+              searchField={searchField}
+              filyerType={filyerType}
+              displayTodos={displayTodos}
+            />
+          )}
         </div>
       </div>
     </>
