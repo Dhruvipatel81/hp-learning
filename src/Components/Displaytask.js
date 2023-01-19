@@ -2,43 +2,33 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Modaldata from "./Modaldata";
 import ReactPaginate from "react-paginate";
-
+import Deletemodal from "./Deletemodal";
 function PaginatedItems({
   itemsPerPage,
   todos,
-  displayTodos,
+  setTodos,
   searchField,
   filyerType,
-  setSearchField,
   setDisplayTodos,
+  setChecked,
+  checked,
 }) {
   const [itemOffset, setItemOffset] = useState(0);
   const [pageData, setPageData] = useState(todos);
-  // const [filterPagination, setFilterPagination] = useState(todos);
-
   const handlePageCount = (pageDataLength) =>
     pageDataLength && Math.ceil(pageDataLength.length / itemsPerPage);
   const [pageCountData, setPageCountData] = useState(handlePageCount(pageData));
   useEffect(() => {
     setItemOffset(0);
   }, [filyerType]);
-  // useEffect(() => {
-  //   // setPageData(todos),
-  //   setPageData(filterPagination);
-  // }, [filterPagination]);
-
   useEffect(() => {
     // setSearchField(todos)
-    console.log("todos2");
+    // console.log("todos2");
     const endOffset = itemOffset + itemsPerPage;
     // console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-    const filterPagination =
-    todos.length!==0 &&todos;
-    // if (todos.length !== 0 && todos) {
-    //   setFilterPagination(todos);
-    // }
+    const filterPagination = todos.length !== 0 && todos;
     // searchField && searchField.length > 0 ? searchField : todos;
-    console.log("filterPagination333", searchField);
+    // console.log("filterPagination333", searchField);
     setPageData(filterPagination);
     setPageCountData(handlePageCount(searchField));
     // console.log(
@@ -49,18 +39,18 @@ function PaginatedItems({
     //   todos
     // );
     const currentItems =
-    searchField && searchField.slice(itemOffset, endOffset);
+      searchField && searchField.slice(itemOffset, endOffset);
     // console.log("currentItems", currentItems);
     // setSearchField(currentItems);
     setDisplayTodos(currentItems);
+    // setTodos(currentItems);
   }, [itemOffset, filyerType, todos]);
-
   const handlePageClick = (event) => {
+    // console.log(event, "event");
     const newOffset = (event.selected * itemsPerPage) % pageData.length;
-    // console.log("handlechange_newOffset", newOffset, itemsPerPage);
+    setChecked(!checked);
     setItemOffset(newOffset);
   };
-  // console.log("handlechange_psgrcont", pageCount)
   return (
     <>
       <ReactPaginate
@@ -82,36 +72,46 @@ const Displaytask = ({
   header,
   setHeader,
   datainfo,
-  getData
+  getData,
 }) => {
-  console.log(todos, "todosdisplay");
+  // console.log(todos, "todosdisplay");
   const [matchid, setMatchid] = useState("");
   const [dataeditable, setDataeditable] = useState(false);
   const [searchField, setSearchField] = useState(todos);
   const [displayTodos, setDisplayTodos] = useState(todos);
-  const [checked, setChecked] = useState("")
-
+  const [checked, setChecked] = useState(false);
   const [filyerType, setFilyerType] = useState("filter");
- 
   // console.log("todos1", displayTodos, todos);
   const [id, setId] = useState("");
   const [editDataObj, setEditDataObj] = useState([]);
   const [editable, setEditable] = useState(false);
+
+  const [deleteid, setDeleteid] = useState("")
   const deleteTodo = (curr) => {
-    const deleteditem = todos.filter((currelem) => {
-      console.log(curr.id,"currelem")
-      return currelem.id !== curr.id;
+    // setButtonClicks(true)
+ const deleteditem = todos.filter((currelem) => {
+     
+      console.log(curr.id, "currelem");
+
+
+      // return currelem.id !== curr.id;
     });
-    setTodos(deleteditem);
-
-    setSearchField(deleteditem);
+    // setTodos(deleteditem);
+    // setSearchField(deleteditem);
     // setDisplayTodos(deleteditem);
-    axios.delete(`http://localhost:5001/todos/${curr.id}`, {
-
-}).then(
-  getData()
-  );
+  //   axios.delete(`http://localhost:5001/todos/${curr.id}`, {}).then(getData());
+  // };
+  }
+const deletemodalopen=(curr)=>{ 
+  console.log(curr,"currr")
+  // setButtonClicks(true)
+  setDeleteid(curr.id)
+  
 }
+ 
+// useEffect(()=>{
+//   deletemodalopen()
+// },[])
   const editItem = (curr) => {
     console.log(curr, "idd");
     const editData = todos.filter((currele, index) => {
@@ -120,7 +120,7 @@ const Displaytask = ({
         return currele.id === curr.id;
       }
     });
-    setData(editData)
+    setData(editData);
     setEditDataObj(editData);
 
     const newdata = { ...editData[0] };
@@ -133,63 +133,37 @@ const Displaytask = ({
     setEditable(true);
     setHeader(false);
   };
-
-  // const statuscheck=()={
-
-  // }
-  const statuschange = (curr,e) => {
-e.target.checked=true;
-    setFilyerType(curr);
-    console.log(e.target.checked,e.target.id, "id2333");
+  const statuschange = (curr) => {
+    // setFilyerType(curr);
     const neObj = { ...curr };
-    console.log(neObj.id, curr.completed, "id222222");
-
-     if (curr.completed === false) {
-      neObj.completed = true;
-     
-     
-    } else {
-      neObj.completed = false;
-      
-    }
-
-    
+    neObj.completed = !curr.completed;
+    // if (curr.completed === false) {
+    //   neObj.completed = true;
+    // } else {
+    //   neObj.completed = false;
+    // }
+    // console.log("console_newTodo", curr, neObj);
     const newTodo = [...todos];
-console.log(curr.id,"newid")
-  
     var foundIndex = todos.findIndex((x) => x.id === neObj.id);
-
-    console.log(foundIndex, neObj.id, "dydhie1");
-    newTodo[foundIndex] = neObj;
-
+    newTodo[foundIndex] = neObj
+    const newDisplayTodo = [...displayTodos];
+    var foundIndex = displayTodos.findIndex((x) => x.id === neObj.id);
+    newDisplayTodo[foundIndex] = neObj;
+    // console.log("console_newTodo_00", newTodo);
     axios
-    .put(`http://localhost:5001/todos/${curr.id}`, 
-   {
-    userid:curr.id,
-    title: curr.title,
-     completed:curr.completed===false?true:false,
-     id:curr.id,
-     
-  },
-     )
-    .then(function (response) {
-  // e.target.checked=false;
-       getData();  
-      //  setTodos(newTodo);
-setSearchField(newTodo);
-      //  setDisplayTodos(newTodo); 
-       if(e.target.checked===true){
-        e.target.checked=false;
-       }
-       
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-   
+      .put(`http://localhost:5001/todos/${curr.id}`, neObj)
+      .then(function (response) {
+        // console.log("console_response",newTodo, neObj);
+        getData();
+        setChecked(!checked);
+        // setSearchField(newTodo);
+        // setDisplayTodos(newDisplayTodo);
+        setTodos(newTodo);
+      })
+      .catch(function (error) {
+        // console.log(error);
+      });
   };
-
-
   const searchtask = (e) => {
     console.log(e.target.value, "valuess");
     setFilyerType(e.target.value);
@@ -204,7 +178,6 @@ setSearchField(newTodo);
     console.log(displayTodos, "todo23");
   };
   const sortOptions = ["ascending", "descending"];
-
   const sortingData = (e) => {
     // console.log(e.target.value, "options");
     setFilyerType(e.target.value);
@@ -226,9 +199,9 @@ setSearchField(newTodo);
   };
   // console.log(displayTodos, "displayTodos12222");
   const filterOption = ["pending", "completed"];
-useEffect(()=>{
-setSearchField(todos)
-},[todos])
+  useEffect(() => {
+    setSearchField(todos);
+  }, [todos]);
   const filterList = (e) => {
     // console.log(e.target.value, searchField);
     const targetValue = e.target.value;
@@ -253,7 +226,6 @@ setSearchField(todos)
       // setDisplayTodos(todos);
     }
   };
-
   return (
     <>
       <div className="second-display-task">
@@ -324,17 +296,18 @@ setSearchField(todos)
                   return (
                     <li className="todo-li" key={index}>
                       <label htmlFor="">
+                        {/* {console.log(filyerType,"filyerType")} */}
                         <input
                           type="checkbox"
-                          // checked={checked}
-                          onChange={(e) => statuschange(curr,e)}
-                          
+                          // checked={curr.completed === true ? true : false}
+                          checked={curr.completed}
+                          onChange={() => statuschange(curr)}
                           id={curr.id}
                         />
                         <p className={curr.completed === true ? "test" : ""}>
                           {curr.title}
                         </p>
-                        {/* <p
+                        <p
                           className={
                             curr.tag === "social"
                               ? "socialtag"
@@ -343,9 +316,9 @@ setSearchField(todos)
                               : "freelancetag"
                           }
                         >
-                          {curr.completed}
-                        </p> */}
-                        <p>{curr.date}</p>
+                          {curr.tag}
+                        </p>
+                        {/* <p>{curr.date}</p> */}
                       </label>
 
                       <div className="delete-icon">
@@ -376,8 +349,22 @@ setSearchField(todos)
                         <i
                           className="fa fa-trash"
                           aria-hidden="true"
-                          onClick={() => deleteTodo(curr)}
-                        ></i>
+                          // onClick={(e) => deleteTodo(curr,e)}
+                          onClick={()=>deletemodalopen(curr)}
+                          data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
+                         
+                        </i>
+                        {/* {console.log(buttonClicks,"buttonClicks")} */}
+                        <Deletemodal
+                          deletedDataId={curr.id}
+                          setDeleteid={setDeleteid}
+                          todos={todos}
+                          setSearchField={setSearchField}
+                          setDisplayTodos={setDisplayTodos}
+                          getData={getData}
+                          deleteid={deleteid}
+                          setTodos={setTodos}
+                          />
                       </div>
                     </li>
                   );
@@ -394,6 +381,8 @@ setSearchField(todos)
               searchField={searchField}
               filyerType={filyerType}
               displayTodos={displayTodos}
+              setChecked={setChecked}
+              checked={checked}
             />
           )}
         </div>

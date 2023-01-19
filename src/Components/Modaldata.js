@@ -15,8 +15,7 @@ const Modaldata = ({
   setFilyerType,
   getData,
 }) => {
-  // let listItems = JSON.parse(localStorage.getItem("formValues"));
-
+  //let listItems = JSON.parse(localStorage.getItem("formValues"));
   var val = Math.floor(1000 + Math.random() * 9000);
   // console.log("matchid123", matchid);
   useEffect(() => {
@@ -44,7 +43,6 @@ const Modaldata = ({
   //   })
 
   // }
-
   const taskname = (e) => {
     const { name, value } = e.target;
 
@@ -57,9 +55,8 @@ const Modaldata = ({
     // console.log(e.target.value, "dataaa")
   };
   // console.log(data, "dataaa")
-
   const localstoredata = () => {
-    console.log("dydhie2");
+    // console.log("dydhie2");
     if (header === true) {
       if (data.title !== "" && data.tag !== "" && data.date !== "") {
         if (!todos) {
@@ -71,20 +68,19 @@ const Modaldata = ({
         // data deleted then new data n
         // ot be added try to remove next
         //  line code put only data
-
         const todosData1 = data && [...todos, data];
         console.log(todosData1, "todosData1");
-        axios.post("http://localhost:5001/todos", 
-          {
-            "userId": data.id,
-              title: data.title,
-              completed: false,
-              id:data.id,
-            },
-          )
+        axios
+          .post("http://localhost:5001/todos", {
+            userId: data.id,
+            title: data.title,
+            completed: false,
+            id: data.id,
+            tag:data.tag
+          })
           .then(function (response) {
-            
             getData();
+            setTodos(todosData1)
             console.log(todosData1);
           })
           .catch(function (error) {
@@ -115,7 +111,7 @@ const Modaldata = ({
 
         // JSON.parse(localStorage.getItem("formValues"));
         setSearchField(todosData1);
-        // setDisplayTodos(todosData1);
+        setDisplayTodos(todosData1);
         setFilyerType("");
       }
     } else {
@@ -134,31 +130,30 @@ const Modaldata = ({
           var foundIndex = todos.findIndex((x) => x.id === matchid);
           console.log(foundIndex, matchid, todos, "dydhie1");
           newTodo[foundIndex] = {
-            "userId": curr.userId,
+            userId: curr.userId,
             id: curr.id,
             title: data.title,
-            "completed": false
+            completed: false,
+            tag:data.tag
           };
           console.log(newTodo, todos, "dydhie11");
           setTodos(newTodo);
           setSearchField(newTodo);
           // setDisplayTodos(newTodo);
-          axios.put(`http://localhost:5001/todos/${curr.id}`,{
-            "userId": curr.userId,
-            id: curr.id,
-            title: data.title,
-            "completed": false
-          } 
-          ).then(function (response) {
-            console.log(response,"response");
-            getData();
-          })
-          .catch(function (error) {
-            console.log("error");
-          })
-            // console.log(todosData1);
-          
-         
+          axios
+            .put(`http://localhost:5001/todos/${curr.id}`, {
+              userId: curr.userId,
+              id: curr.id,
+              title: data.title,
+              completed: false,
+              tag:data.tag
+            })
+            .then(function (response) {
+              getData();
+            })
+            .catch(function (error) {});
+          // console.log(todosData1);
+
           setFilyerType("");
           setData({
             title: "",
@@ -193,8 +188,6 @@ const Modaldata = ({
       // })
     }
   };
- 
-
   return (
     <>
       {/* {console.log("printdata",data)} */}
@@ -231,7 +224,7 @@ const Modaldata = ({
                     className="input-all"
                     id="input-task"
                     type="text"
-                    name="title"
+                    name="title"    
                     value={data?.title}
                     placeholder="Add Task"
                     onChange={taskname}
@@ -299,5 +292,4 @@ const Modaldata = ({
     </>
   );
 };
-
 export default Modaldata;

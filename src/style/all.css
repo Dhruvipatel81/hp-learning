@@ -450,12 +450,11 @@ margin-top: 20px;
     border: 1px solid black;
     padding:4px 10px;
     border-radius: 3px;
-
-
 }
-/* .selected {
-    display: none;
-} */
+li.selected {
+    background-color: #000;
+    color: #fff;
+}
 
 .socialtag{
     background-color: rgb(195, 155, 233);
